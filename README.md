@@ -1,9 +1,9 @@
 # Shopping Cart
 
-Build a mini e-commerce shopping portal featuring product listing and a functional shopping cart.\
+Build a mini food ordering web app featuring product listing and a functional shopping cart.\
 Prioritize correctness in functionality while getting it to look as close to the design as possible.
 
-For this task you will need to integrate to our demo e-commerce API for listing products and submitting orders.
+For this task you will need to integrate to our demo e-commerce API for listing products and placing orders.
 
 **API Reference**
 
@@ -12,23 +12,29 @@ You can find our [API Documentation](https://orderfoodonline.deno.dev/public/ope
 API documentation is based on [OpenAPI3.1](https://swagger.io/specification/v3/) specification.
 You can also find spec file [here](https://orderfoodonline.deno.dev/public/openapi.yaml).
  
+**Functional Requirements**
 
-**Minimum requirements**
-
-- Display products with image
-- Add items to the cart and remove item
+- Display products with images
+- Add items to the cart and remove items
 - Show order total correctly
 - Increase or decrease item count in the cart
-- Show order confirkmation after placing the order
+- Show order confirmation after placing the order
 - Interactive hover and focus states for elements
-- Integrates with demo REST API for product listing and placing orders
 
 **Bonus Goals**
 
-- Allow users to enter a discount code (above confirm order button)
+- Allow users to enter a discount code (above the "Confirm Order" button)
 - Discount code `HAPPYHOURS` applies 18% discount to the order total
 - Discount code `BUYGETONE` gives the lowest priced item for free
 - Responsive design based on device's screen size
+
+**Are You a Full Stack Developer??**
+
+Impress us by implementing your own version of the API based on the OpenAPI specification.\
+Choose any language or framework of your choice. For example our top pick for backend is [Go](https://go.dev)
+
+> The API immplementation example available to you at orderfoodonline.deno.dev/api is simplified and doesn't handle some edge cases intentionally.
+> Use your best judgement to build a Robust API server.
 
 ## Design
 
@@ -69,4 +75,12 @@ Here is an example workflow (you can use it as a reference or use your own workf
 
 > 💡 Replace or Modify this README to explain your solution and how to run and test it.
 
-🚀
+_By following these guidelines, you should be able to build a functional and visually appealing mini e-commerce shopping portal that meets the minimum requirements and bonus goals. Good luck! 🚀_
+
+**Resources**
+
+- API documentation: https://orderfoodonline.deno.dev/public/openapi.html
+- API specification: https://orderfoodonline.deno.dev/public/openapi.yaml
+- Figma design file: [design.fig](./design.fig)
+- Red Hat Text font: https://fonts.google.com/specimen/Red+Hat+Text
+
