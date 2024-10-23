@@ -5,6 +5,14 @@ Prioritize correctness in functionality while getting it to look as close to the
 
 For this task you will need to integrate to our demo e-commerce API for listing products and submitting orders.
 
+**API Reference**
+
+You can find our [API Documentation](https://orderfoodonline.deno.dev/public/openapi.html) here.
+
+API documentation is based on [OpenAPI3.1](https://swagger.io/specification/v3/) specification.
+You can also find spec file [here](https://orderfoodonline.deno.dev/public/openapi.yaml).
+ 
+
 **Minimum requirements**
 
 - Display products with image
