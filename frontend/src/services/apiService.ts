@@ -1,5 +1,6 @@
-const API_BASE_URL = "http://localhost:8080"; // Assuming backend runs on 8080
-const API_KEY = "your_api_key_here"; // Placeholder for API Key
+const API_BASE_URL =
+  import.meta.env.VITE_API_BASE_URL || "http://localhost:8080";
+const API_KEY = import.meta.env.VITE_API_KEY;
 
 interface Product {
   id: string;
@@ -44,12 +45,17 @@ export const placeOrder = async (
   orderData: OrderRequest,
 ): Promise<OrderResponse> => {
   try {
+    const headers: HeadersInit = {
+      "Content-Type": "application/json",
+    };
+
+    if (API_KEY) {
+      headers["X-API-Key"] = API_KEY;
+    }
+
     const response = await fetch(`${API_BASE_URL}/order`, {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "X-API-Key": API_KEY, // Sending API key in header as per plan
-      },
+      headers,
       body: JSON.stringify(orderData),
     });
 
