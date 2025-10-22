@@ -1,0 +1,26 @@
+run:
+  timeout: 5m
+  issues-exit-code: 1
+  tests: false # Don't run linters on test files by default
+
+linters-settings:
+  errcheck:
+    check-type-assertions: true
+  gofmt:
+    simplify: true
+  goimports:
+    local-prefixes: kart-challenge/backend # Adjust this to your module name
+  staticcheck:
+    checks: ["all"]
+
+linters:
+  enable:
+    - errcheck
+    - gofmt
+    - goimports
+    - staticcheck
+    - unused
+    - gosimple
+    - unparam
+    - ineffassign
+    - typecheck
