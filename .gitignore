@@ -66,6 +66,9 @@ web_modules/
 # Optional REPL history
 .node_repl_history
 
+# Frontend environment file
+/frontend/.env
+
 # Output of 'npm pack'
 *.tgz
 

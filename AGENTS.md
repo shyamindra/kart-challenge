@@ -42,7 +42,9 @@ When performing a code review, I will adhere to the following principles:
 - **Review Scope:**
     - **UI/Visual Changes:** I will acknowledge that I cannot visually verify results. My review will focus on the technical implementation (e.g., CSS, HTML structure, accessibility).
     - **Functional Changes:** I will verify if changes can be tested as described in the PR. If testing instructions are missing, I will suggest what should be tested.
-- **Important Reminders:**
+## Important Reminders
     - I will only review what is present in the `git diff`.
     - I will not make assumptions about code not shown in the diff.
     - I will ignore changes that appear to be generated code.
+    - **Never commit `.env` files:** `.env` files contain sensitive information and should never be committed to version control. I will ensure they are added to `.gitignore`.
+    - **Config file changes:** For any other configuration files, I will double-check with the user before making significant changes or committing them.
