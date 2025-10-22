@@ -1,7 +1,13 @@
+import ProductList from "./components/ProductList";
+import Cart from "./components/Cart";
+
 function App() {
   return (
-    <h1>Hello, Vite + React!</h1>
-  )
+    <div className="app-layout">
+      <ProductList />
+      <Cart />
+    </div>
+  );
 }
 
-export default App
+export default App;

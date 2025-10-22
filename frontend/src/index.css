@@ -1,18 +1,11 @@
-@import url('https://fonts.googleapis.com/css2?family=Red+Hat+Text:wght@400;700&display=swap');
-
-/* Basic CSS Reset */
-*,
-*::before,
-*::after {
-  box-sizing: border-box;
-}
-
 body {
   margin: 0;
   font-family: 'Red Hat Text', sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   line-height: 1.5;
+  background-color: var(--color-background);
+  color: var(--color-text-dark);
 }
 
 /* Remove default margin */
@@ -83,4 +76,237 @@ input, button, textarea, select {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
+}
+
+.app-layout {
+  display: flex;
+  flex-direction: column; /* Default to single column for mobile */
+  min-height: 100vh;
+  padding: var(--spacing-md);
+  gap: var(--spacing-md);
+}
+
+@media (min-width: 768px) { /* Tablet and larger */
+  .app-layout {
+    flex-direction: row; /* Two columns for larger screens */
+  }
+}
+
+.product-list {
+  flex: 3; /* Takes 3 parts of space in a two-column layout */
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: var(--spacing-md);
+}
+
+.cart {
+  flex: 1; /* Takes 1 part of space in a two-column layout */
+  background-color: var(--color-text-light);
+  padding: var(--spacing-md);
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.product-card {
+  background-color: var(--color-text-light);
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.product-card img {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+}
+
+.product-info {
+  padding: var(--spacing-md);
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+}
+
+.product-name {
+  font-size: 1.2em;
+  font-weight: var(--font-weight-bold);
+  margin-bottom: var(--spacing-sm);
+}
+
+.product-category {
+  font-size: 0.9em;
+  color: var(--color-gray-dark);
+  margin-bottom: var(--spacing-sm);
+}
+
+.product-price {
+  font-size: 1.1em;
+  font-weight: var(--font-weight-bold);
+  color: var(--color-primary);
+  margin-top: auto; /* Pushes price and button to bottom */
+  margin-bottom: var(--spacing-md);
+}
+
+.add-to-cart-button {
+  background-color: var(--color-primary);
+  color: var(--color-text-light);
+  border: none;
+  padding: var(--spacing-sm) var(--spacing-md);
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.2s ease-in-out;
+}
+
+.add-to-cart-button:hover {
+  background-color: #e65a5a;
+}
+
+.added-confirmation {
+  margin-left: var(--spacing-sm);
+  color: var(--color-secondary);
+  font-weight: var(--font-weight-bold);
+}
+
+.cart-items-list {
+  margin-top: var(--spacing-md);
+  border-top: 1px solid var(--color-gray-light);
+  padding-top: var(--spacing-md);
+}
+
+.cart-item {
+  display: flex;
+  gap: var(--spacing-sm);
+  margin-bottom: var(--spacing-md);
+  align-items: center;
+}
+
+.cart-item-image {
+  width: 60px;
+  height: 60px;
+  object-fit: cover;
+  border-radius: 4px;
+}
+
+.cart-item-details {
+  flex-grow: 1;
+}
+
+.cart-item-name {
+  font-size: 1em;
+  font-weight: var(--font-weight-bold);
+}
+
+.cart-item-price {
+  font-size: 0.9em;
+  color: var(--color-gray-dark);
+}
+
+.cart-item-quantity-controls {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  margin-top: var(--spacing-sm);
+}
+
+.cart-item-quantity-controls button {
+  background-color: var(--color-gray-light);
+  border: 1px solid var(--color-gray-medium);
+  width: 24px;
+  height: 24px;
+  border-radius: 4px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+}
+
+.cart-item-remove-button {
+  background-color: #dc3545;
+  color: var(--color-text-light);
+  border: none;
+  padding: var(--spacing-xs) var(--spacing-sm);
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.8em;
+  margin-top: var(--spacing-sm);
+}
+
+.cart-summary {
+  border-top: 1px solid var(--color-gray-light);
+  padding-top: var(--spacing-md);
+  margin-top: var(--spacing-md);
+  text-align: right;
+}
+
+.confirm-order-button {
+  background-color: var(--color-secondary);
+  color: var(--color-text-light);
+  border: none;
+  padding: var(--spacing-sm) var(--spacing-md);
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 1.1em;
+  margin-top: var(--spacing-md);
+}
+
+.confirm-order-button:disabled {
+  background-color: var(--color-gray-medium);
+  cursor: not-allowed;
+}
+
+.coupon-input {
+  margin-bottom: var(--spacing-md);
+}
+
+.coupon-input input {
+  width: 100%;
+  padding: var(--spacing-sm);
+  border: 1px solid var(--color-gray-medium);
+  border-radius: 4px;
+}
+
+.order-confirmation-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background-color: var(--color-text-light);
+  padding: var(--spacing-xl);
+  border-radius: 8px;
+  text-align: center;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.modal-content h2 {
+  color: var(--color-secondary);
+  margin-bottom: var(--spacing-md);
+}
+
+.modal-content p {
+  margin-bottom: var(--spacing-sm);
+}
+
+.modal-content strong {
+  font-weight: var(--font-weight-bold);
+}
+
+.modal-content button {
+  background-color: var(--color-primary);
+  color: var(--color-text-light);
+  border: none;
+  padding: var(--spacing-sm) var(--spacing-lg);
+  border-radius: 4px;
+  cursor: pointer;
+  margin-top: var(--spacing-md);
 }
