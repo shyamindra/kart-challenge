@@ -160,3 +160,8 @@ go.work
 
 # Executables
 cmd/api/main
+
+# Backend specific ignores
+/backend/data/
+/backend/api-server
+/backend/.!*api-server

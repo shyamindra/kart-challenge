@@ -5,7 +5,6 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
-	"sync"
 )
 
 const (
@@ -16,7 +15,6 @@ const (
 // Validator holds the data directory path.
 type Validator struct {
 	dataDir string
-	mu      sync.RWMutex // Not strictly needed for this approach, but keeping for consistency
 }
 
 // NewValidator creates and initializes a new promo code validator.
@@ -56,15 +54,11 @@ func (v *Validator) IsValid(code string) bool {
 		scanner := bufio.NewScanner(file)
 		for scanner.Scan() {
 			if strings.TrimSpace(scanner.Text()) == code {
-				foundCount++;
+				foundCount++
 				break // Found in this file, move to the next
 			}
 		}
 
-		if scanner.Err() != nil {
-			// Log the error
-			// log.Printf("Scanner error in promo code file %s: %v", filePath, scanner.Err())
-		}
 	}
 
 	return foundCount >= 2

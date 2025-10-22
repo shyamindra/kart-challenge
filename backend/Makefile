@@ -1,7 +1,7 @@
 GOCMD=go
 GOBUILD=$(GOCMD) build
 GOTEST=$(GOCMD) test
-GOLINT=$(GOCMD) run github.com/golangci/golangci-lint/cmd/golangci-lint
+GOLINT=$(shell go env GOPATH)/bin/golangci-lint
 GOGEN=$(shell $(GOCMD) env GOPATH)/bin/oapi-codegen # Use shell to get GOPATH for oapi-codegen
 
 PROJECT_DIR=$(shell pwd)
@@ -12,8 +12,8 @@ all: build
 
 generate:
 	@echo "Generating Go types and server interface..."
-	$(GOGEN) --config=$(PROJECT_DIR)/types.codegen.yaml $(PROJECT_DIR)/openapi.yaml
-	$(GOGEN) --config=$(PROJECT_DIR)/server.codegen.yaml $(PROJECT_DIR)/openapi.yaml
+	$(GOGEN) --config=$(PROJECT_DIR)/types.codegen.yaml ../api/openapi.yaml
+	$(GOGEN) --config=$(PROJECT_DIR)/server.codegen.yaml ../api/openapi.yaml
 
 build:
 	@echo "Building project..."
