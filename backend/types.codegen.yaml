@@ -1,4 +1,4 @@
 package: handler
-output: internal/handler/types.gen.go
+output: backend/internal/handler/types.gen.go
 generate:
   - types

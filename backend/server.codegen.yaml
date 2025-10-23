@@ -1,4 +1,4 @@
 package: handler
-output: internal/handler/server.gen.go
+output: backend/internal/handler/server.gen.go
 generate:
   - chi-server
