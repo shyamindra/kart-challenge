@@ -4,21 +4,21 @@ import (
 	"fmt"
 	"sync"
 
-	"kart-challenge/backend/internal/handler"
+	"kart-challenge/backend/internal/model"
 )
 
 // InMemoryStorage implements ProductRepository and OrderRepository using in-memory data.
 type InMemoryStorage struct {
-	products map[string]handler.Product
-	orders   []handler.Order
+	products map[string]model.Product
+	orders   []model.Order
 	mu       sync.RWMutex
 }
 
 // NewInMemoryStorage creates and initializes a new InMemoryStorage.
 func NewInMemoryStorage() *InMemoryStorage {
 	s := &InMemoryStorage{
-		products: make(map[string]handler.Product),
-		orders:   []handler.Order{},
+		products: make(map[string]model.Product),
+		orders:   []model.Order{},
 	}
 	s.initProducts()
 	return s
@@ -30,9 +30,9 @@ func sPtr(s string) *string { return &s }
 // Helper function to get a pointer to a float32
 func fPtr(f float32) *float32 { return &f }
 
-// createProduct is a helper to create handler.Product instances with correct pointer fields.
-func createProduct(id, name, category string, price float32, desktop, mobile, thumbnail, tablet string) handler.Product {
-	return handler.Product{
+// createProduct is a helper to create model.Product instances with correct pointer fields.
+func createProduct(id, name, category string, price float32, desktop, mobile, thumbnail, tablet string) model.Product {
+	return model.Product{
 		Id:       sPtr(id),
 		Name:     sPtr(name),
 		Price:    fPtr(price),
@@ -77,11 +77,11 @@ func (s *InMemoryStorage) initProducts() {
 }
 
 // GetAllProducts returns all available products.
-func (s *InMemoryStorage) GetAllProducts() ([]handler.Product, error) {
+func (s *InMemoryStorage) GetAllProducts() ([]model.Product, error) {
 	s.mu.RLock()
 	defer s.mu.RUnlock()
 
-	products := make([]handler.Product, 0, len(s.products))
+	products := make([]model.Product, 0, len(s.products))
 	for _, p := range s.products {
 		products = append(products, p)
 	}
@@ -89,7 +89,7 @@ func (s *InMemoryStorage) GetAllProducts() ([]handler.Product, error) {
 }
 
 // GetProductByID returns a product by its ID.
-func (s *InMemoryStorage) GetProductByID(id string) (*handler.Product, error) {
+func (s *InMemoryStorage) GetProductByID(id string) (*model.Product, error) {
 	s.mu.RLock()
 	defer s.mu.RUnlock()
 
@@ -101,7 +101,7 @@ func (s *InMemoryStorage) GetProductByID(id string) (*handler.Product, error) {
 }
 
 // CreateOrder adds a new order to the storage.
-func (s *InMemoryStorage) CreateOrder(order handler.Order) error {
+func (s *InMemoryStorage) CreateOrder(order model.Order) error {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 

@@ -10,7 +10,7 @@ import (
 )
 
 // Helper functions for pointers
-func sPtr(s string) *string { return &s }
+func sPtr(s string) *string   { return &s }
 func fPtr(f float32) *float32 { return &f }
 
 // MockProductRepository is a mock implementation of storage.ProductRepository
@@ -62,18 +62,18 @@ func TestOrderService_PlaceOrder(t *testing.T) {
 		Name:     sPtr("Chicken Waffle"),
 		Price:    fPtr(13.3),
 		Category: sPtr("Waffle"),
-				Image: &struct {
-					Desktop   *string `json:"desktop,omitempty"`
-					Mobile    *string `json:"mobile,omitempty"`
-					Tablet    *string `json:"tablet,omitempty"`
-					Thumbnail *string `json:"thumbnail,omitempty"`
-				}{
-					Desktop:   nil,
-					Mobile:    nil,
-					Tablet:    nil,
-					Thumbnail: nil,
-				},
-			}
+		Image: &struct {
+			Desktop   *string `json:"desktop,omitempty"`
+			Mobile    *string `json:"mobile,omitempty"`
+			Tablet    *string `json:"tablet,omitempty"`
+			Thumbnail *string `json:"thumbnail,omitempty"`
+		}{
+			Desktop:   nil,
+			Mobile:    nil,
+			Tablet:    nil,
+			Thumbnail: nil,
+		},
+	}
 
 	// Test case 1: Successful order without coupon
 	t.Run("Successful order without coupon", func(t *testing.T) {

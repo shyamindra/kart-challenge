@@ -2,3 +2,6 @@ package: handler
 output: backend/internal/handler/server.gen.go
 generate:
   - chi-server
+  - spec
+import-mapping:
+  openapi.yaml: kart-challenge/backend/internal/model

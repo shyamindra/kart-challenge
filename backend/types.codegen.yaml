@@ -1,4 +1,5 @@
-package: handler
-output: backend/internal/handler/types.gen.go
+package: model
+output: backend/internal/model/types.gen.go
 generate:
   - types
+  - spec

@@ -11,14 +11,22 @@ import (
 
 	"kart-challenge/backend/internal/handler"
 	"kart-challenge/backend/internal/promocode"
+	"kart-challenge/backend/internal/service"
+	"kart-challenge/backend/internal/storage"
 )
 
 func main() {
 	log.Print("Starting server...")
 
 	// Initialize promo code validator
-	dataDir := filepath.Join(".", "data") // Assuming data directory is at the root of backend-challenge
+	dataDir := filepath.Join("backend", "data")
 	validator := promocode.NewValidator(dataDir)
+
+	// Initialize storage
+	store := storage.NewInMemoryStorage()
+
+	// Initialize service
+	orderService := service.NewOrderService(store, store, validator)
 
 	r := chi.NewRouter()
 
@@ -26,7 +34,10 @@ func main() {
 	r.Use(middleware.Recoverer)
 
 	// Our API operations
-	var api handler.ServerInterface = &handler.Server{PromoCodeValidator: validator}
+	var api handler.ServerInterface = &handler.Server{
+		OrderService: orderService,
+		ProductRepo:  store,
+	}
 
 	handler.HandlerFromMux(api, r)
 

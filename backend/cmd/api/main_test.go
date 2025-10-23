@@ -7,8 +7,8 @@ import (
 	"testing"
 
 	"github.com/go-chi/chi/v5"
-	"kart-challenge/backend/internal/handler"
 	"github.com/stretchr/testify/assert"
+	"kart-challenge/backend/internal/handler"
 )
 
 func TestListProducts(t *testing.T) {

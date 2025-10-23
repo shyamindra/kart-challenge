@@ -1,6 +1,13 @@
 package promocode
 
-/*
+import (
+	"os"
+	"path/filepath"
+	"testing"
+
+	"github.com/stretchr/testify/assert"
+)
+
 func TestValidator_IsValid(t *testing.T) {
 	// Create dummy data directory and files for testing
 	testDataDir := t.TempDir()
@@ -39,4 +46,3 @@ func TestValidator_IsValid(t *testing.T) {
 		})
 	}
 }
-*/

@@ -2,9 +2,9 @@ package promocode
 
 import (
 	"bufio"
-	"compress/gzip"
 	"fmt"
-	"net/http"
+	"os"
+	"path/filepath"
 	"strings"
 	"sync"
 )
@@ -39,34 +39,25 @@ func NewValidator(dataDir string) *Validator {
 // setupPromoCodes performs the one-time expensive setup of downloading, decompressing,
 // and building the lookup table for promo codes.
 func (v *Validator) setupPromoCodes() error {
-	promoCodeURLs := []string{
-		"https://orderfoodonline-files.s3.ap-southeast-2.amazonaws.com/couponbase1.gz",
-		"https://orderfoodonline-files.s3.ap-southeast-2.amazonaws.com/couponbase2.gz",
-		"https://orderfoodonline-files.s3.ap-southeast-2.amazonaws.com/couponbase3.gz",
+	// The files are expected to be in v.dataDir after running prepare_data.sh
+	promoCodeFiles := []string{
+		"couponbase1",
+		"couponbase2",
+		"couponbase3",
 	}
 
 	// Use a temporary map to store counts before updating the main map
-	// This avoids locking the main map for each file processing
 	tempCodes := make(map[string]int)
 
-	for i, url := range promoCodeURLs {
-		resp, err := http.Get(url)
+	for i, filename := range promoCodeFiles {
+		filePath := filepath.Join(v.dataDir, filename)
+		file, err := os.Open(filePath)
 		if err != nil {
-			return fmt.Errorf("failed to download %s: %w", url, err)
+			return fmt.Errorf("failed to open promo code file %s: %w", filePath, err)
 		}
-		defer resp.Body.Close()
+		defer file.Close()
 
-		if resp.StatusCode != http.StatusOK {
-			return fmt.Errorf("failed to download %s: status code %d", url, resp.StatusCode)
-		}
-
-		gzReader, err := gzip.NewReader(resp.Body)
-		if err != nil {
-			return fmt.Errorf("failed to create gzip reader for %s: %w", url, err)
-		}
-		defer gzReader.Close()
-
-		scanner := bufio.NewScanner(gzReader)
+		scanner := bufio.NewScanner(file)
 		for scanner.Scan() {
 			code := strings.TrimSpace(scanner.Text())
 			if len(code) >= minPromoCodeLength && len(code) <= maxPromoCodeLength {
@@ -76,7 +67,7 @@ func (v *Validator) setupPromoCodes() error {
 		}
 
 		if scanner.Err() != nil {
-			return fmt.Errorf("scanner error for %s: %w", url, scanner.Err())
+			return fmt.Errorf("scanner error for %s: %w", filePath, scanner.Err())
 		}
 	}
 

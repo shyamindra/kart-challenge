@@ -2,8 +2,10 @@ package service
 
 import (
 	"fmt"
+
 	"github.com/google/uuid"
-	"kart-challenge/backend/internal/handler"
+
+	"kart-challenge/backend/internal/model"
 	"kart-challenge/backend/internal/promocode"
 	"kart-challenge/backend/internal/storage"
 )
@@ -25,7 +27,7 @@ func NewOrderService(productRepo storage.ProductRepository, orderRepo storage.Or
 }
 
 // PlaceOrder processes a new order request.
-func (s *OrderService) PlaceOrder(req handler.OrderReq) (*handler.Order, error) {
+func (s *OrderService) PlaceOrder(req model.OrderReq) (*model.Order, error) {
 	// Helper functions for pointers
 	sPtr := func(s string) *string { return &s }
 	fPtr := func(f float32) *float32 { return &f }
@@ -69,7 +71,7 @@ func (s *OrderService) PlaceOrder(req handler.OrderReq) (*handler.Order, error) 
 	total -= discountsAmount
 
 	// 5. Construct the final types.Order object
-	newOrder := handler.Order{
+	newOrder := model.Order{
 		Id:        sPtr(uuid.New().String()),
 		Items:     &orderItems,
 		Total:     fPtr(total),
