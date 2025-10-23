@@ -38,44 +38,84 @@ func (s *OrderService) PlaceOrder(req model.OrderReq) (*model.Order, error) {
 	fPtr := func(f float32) *float32 { return &f }
 	iPtr := func(i int) *int { return &i }
 
-	// 1. Validate coupon code
-	var discount float32
-	if req.CouponCode != nil && *req.CouponCode != "" {
-		if !s.promo.IsValid(*req.CouponCode) {
-			return nil, fmt.Errorf("invalid coupon code: %s", *req.CouponCode)
-		}
-		// For now, a valid coupon just gives a flat 10% discount
-		discount = 0.10 // 10% discount
+	// Internal struct to hold item details and price for calculation
+	type pricedItem struct {
+		productID string
+		quantity  int
+		price     float32
+		subtotal  float32
 	}
-
+	
 	var total float32
-	orderItems := make([]struct {
-		ProductId *string `json:"productId,omitempty"`
-		Quantity  *int    `json:"quantity,omitempty"`
-	}, 0)
+	var discountsAmount float32
+	pricedItems := make([]pricedItem, 0, len(req.Items))
 
-	// 2. Fetch product details and calculate subtotal
+	// 1. Fetch product details and calculate subtotal
 	for _, itemReq := range req.Items {
 		product, err := s.productRepo.GetProductByID(itemReq.ProductId)
 		if err != nil {
 			return nil, fmt.Errorf("product not found: %s", itemReq.ProductId)
 		}
-		total += *product.Price * float32(itemReq.Quantity)
+		
+		itemPrice := *product.Price
+		itemSubtotal := itemPrice * float32(itemReq.Quantity)
+		total += itemSubtotal
 
-		orderItems = append(orderItems, struct {
-			ProductId *string `json:"productId,omitempty"`
-			Quantity  *int    `json:"quantity,omitempty"`
-		}{
-			ProductId: sPtr(itemReq.ProductId),
-			Quantity:  iPtr(itemReq.Quantity),
+		pricedItems = append(pricedItems, pricedItem{
+			productID: itemReq.ProductId,
+			quantity:  itemReq.Quantity,
+			price:     itemPrice,
+			subtotal:  itemSubtotal,
 		})
 	}
 
+	// 2. Validate and apply coupon code
+	if req.CouponCode != nil && *req.CouponCode != "" {
+		coupon := *req.CouponCode
+		if !s.promo.IsValid(coupon) {
+			return nil, fmt.Errorf("invalid coupon code: %s", coupon)
+		}
+
+		switch coupon {
+		case "HAPPYHOURS":
+			// 20% discount on total
+			discountsAmount = total * 0.20
+		case "BUYGETONE":
+			// Lowest priced item is free
+			if len(pricedItems) > 0 {
+				lowestPrice := pricedItems[0].price
+				for _, item := range pricedItems {
+					if item.price < lowestPrice {
+						lowestPrice = item.price
+					}
+				}
+				discountsAmount = lowestPrice
+			}
+		default:
+			// Default 10% discount for any other valid coupon
+			discountsAmount = total * 0.10
+		}
+	}
+
 	// Apply discount
-	discountsAmount := total * discount
 	total -= discountsAmount
 
-	// 5. Construct the final types.Order object
+	// 3. Construct the final types.Order object
+	orderItems := make([]struct {
+		ProductId *string `json:"productId,omitempty"`
+		Quantity  *int    `json:"quantity,omitempty"`
+	}, len(pricedItems))
+
+	for i, item := range pricedItems {
+		orderItems[i] = struct {
+			ProductId *string `json:"productId,omitempty"`
+			Quantity  *int    `json:"quantity,omitempty"`
+		}{
+			ProductId: sPtr(item.productID),
+			Quantity:  iPtr(item.quantity),
+		}
+	}
+
 	newOrder := model.Order{
 		Id:        sPtr(uuid.New().String()),
 		Items:     &orderItems,
@@ -83,7 +123,7 @@ func (s *OrderService) PlaceOrder(req model.OrderReq) (*model.Order, error) {
 		Discounts: fPtr(discountsAmount),
 	}
 
-	// 6. Save the order
+	// 4. Save the order
 	if err := s.orderRepo.CreateOrder(newOrder); err != nil {
 		return nil, fmt.Errorf("failed to save order: %w", err)
 	}

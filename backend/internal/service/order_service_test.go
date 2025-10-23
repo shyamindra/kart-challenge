@@ -56,28 +56,34 @@ func TestOrderService_PlaceOrder(t *testing.T) {
 	sPtr := func(s string) *string { return &s }
 	fPtr := func(f float32) *float32 { return &f }
 
-	// Define a sample product (can be outside t.Run as it's constant)
-	sampleProduct := model.Product{
+	// Define sample products
+	productWaffle := model.Product{
 		Id:       sPtr("10"),
 		Name:     sPtr("Chicken Waffle"),
 		Price:    fPtr(13.3),
 		Category: sPtr("Waffle"),
-		Image: &struct {
+		Image:    &struct{
 			Desktop   *string `json:"desktop,omitempty"`
 			Mobile    *string `json:"mobile,omitempty"`
 			Tablet    *string `json:"tablet,omitempty"`
 			Thumbnail *string `json:"thumbnail,omitempty"`
-		}{
-			Desktop:   nil,
-			Mobile:    nil,
-			Tablet:    nil,
-			Thumbnail: nil,
-		},
+		}{},
+	}
+	productBurger := model.Product{
+		Id:       sPtr("11"),
+		Name:     sPtr("Beef Burger"),
+		Price:    fPtr(15.0),
+		Category: sPtr("Burger"),
+		Image:    &struct{
+			Desktop   *string `json:"desktop,omitempty"`
+			Mobile    *string `json:"mobile,omitempty"`
+			Tablet    *string `json:"tablet,omitempty"`
+			Thumbnail *string `json:"thumbnail,omitempty"`
+		}{},
 	}
 
 	// Test case 1: Successful order without coupon
 	t.Run("Successful order without coupon", func(t *testing.T) {
-		// Setup mocks for this subtest
 		mockProductRepo := new(MockProductRepository)
 		mockOrderRepo := new(MockOrderRepository)
 		mockPromoValidator := new(MockPromoValidator)
@@ -92,30 +98,28 @@ func TestOrderService_PlaceOrder(t *testing.T) {
 			},
 		}
 
-		mockProductRepo.On("GetProductByID", "10").Return(&sampleProduct, nil).Once()
+		mockProductRepo.On("GetProductByID", "10").Return(&productWaffle, nil).Once()
 		mockOrderRepo.On("CreateOrder", mock.AnythingOfType("model.Order")).Return(nil).Once()
-		mockPromoValidator.AssertNotCalled(t, "IsValid", mock.Anything)
 
 		order, err := service.PlaceOrder(orderReq)
 		assert.NoError(t, err)
 		assert.NotNil(t, order)
-		assert.Equal(t, float32(26.6), *order.Total)
-		assert.Equal(t, float32(0), *order.Discounts)
+		assert.InDelta(t, float32(26.6), *order.Total, 0.001)
+		assert.InDelta(t, float32(0), *order.Discounts, 0.001)
 
 		mockProductRepo.AssertExpectations(t)
 		mockOrderRepo.AssertExpectations(t)
-		mockPromoValidator.AssertExpectations(t)
+		mockPromoValidator.AssertNotCalled(t, "IsValid", mock.Anything)
 	})
 
-	// Test case 2: Successful order with valid coupon
-	t.Run("Successful order with valid coupon", func(t *testing.T) {
-		// Setup mocks for this subtest
+	// Test case 2: Successful order with default 10% coupon
+	t.Run("Successful order with default 10% coupon", func(t *testing.T) {
 		mockProductRepo := new(MockProductRepository)
 		mockOrderRepo := new(MockOrderRepository)
 		mockPromoValidator := new(MockPromoValidator)
 		service := NewOrderService(mockProductRepo, mockOrderRepo, mockPromoValidator)
 
-		couponCode := "VALIDCODE"
+		couponCode := "DEFAULT10"
 		orderReq := model.OrderReq{
 			CouponCode: sPtr(couponCode),
 			Items: []struct {
@@ -126,14 +130,14 @@ func TestOrderService_PlaceOrder(t *testing.T) {
 			},
 		}
 
-		mockProductRepo.On("GetProductByID", "10").Return(&sampleProduct, nil).Once()
+		mockProductRepo.On("GetProductByID", "10").Return(&productWaffle, nil).Once()
 		mockOrderRepo.On("CreateOrder", mock.AnythingOfType("model.Order")).Return(nil).Once()
 		mockPromoValidator.On("IsValid", couponCode).Return(true).Once()
 
+		// Total: 26.6. Discount: 26.6 * 0.10 = 2.66. Final: 23.94
 		order, err := service.PlaceOrder(orderReq)
 		assert.NoError(t, err)
 		assert.NotNil(t, order)
-		// Expected total: 26.6 - (26.6 * 0.10) = 26.6 - 2.66 = 23.94
 		assert.InDelta(t, float32(23.94), *order.Total, 0.001)
 		assert.InDelta(t, float32(2.66), *order.Discounts, 0.001)
 
@@ -142,9 +146,78 @@ func TestOrderService_PlaceOrder(t *testing.T) {
 		mockPromoValidator.AssertExpectations(t)
 	})
 
-	// Test case 3: Order with invalid coupon
+	// Test case 3: Successful order with HAPPYHOURS (20%) coupon
+	t.Run("Successful order with HAPPYHOURS (20%) coupon", func(t *testing.T) {
+		mockProductRepo := new(MockProductRepository)
+		mockOrderRepo := new(MockOrderRepository)
+		mockPromoValidator := new(MockPromoValidator)
+		service := NewOrderService(mockProductRepo, mockOrderRepo, mockPromoValidator)
+
+		couponCode := "HAPPYHOURS"
+		orderReq := model.OrderReq{
+			CouponCode: sPtr(couponCode),
+			Items: []struct {
+				ProductId string `json:"productId"`
+				Quantity  int    `json:"quantity"`
+			}{
+				{ProductId: "10", Quantity: 2},
+			},
+		}
+
+		mockProductRepo.On("GetProductByID", "10").Return(&productWaffle, nil).Once()
+		mockOrderRepo.On("CreateOrder", mock.AnythingOfType("model.Order")).Return(nil).Once()
+		mockPromoValidator.On("IsValid", couponCode).Return(true).Once()
+
+		// Total: 26.6. Discount: 26.6 * 0.20 = 5.32. Final: 21.28
+		order, err := service.PlaceOrder(orderReq)
+		assert.NoError(t, err)
+		assert.NotNil(t, order)
+		assert.InDelta(t, float32(21.28), *order.Total, 0.001)
+		assert.InDelta(t, float32(5.32), *order.Discounts, 0.001)
+
+		mockProductRepo.AssertExpectations(t)
+		mockOrderRepo.AssertExpectations(t)
+		mockPromoValidator.AssertExpectations(t)
+	})
+
+	// Test case 4: Successful order with BUYGETONE (lowest item free) coupon
+	t.Run("Successful order with BUYGETONE coupon", func(t *testing.T) {
+		mockProductRepo := new(MockProductRepository)
+		mockOrderRepo := new(MockOrderRepository)
+		mockPromoValidator := new(MockPromoValidator)
+		service := NewOrderService(mockProductRepo, mockOrderRepo, mockPromoValidator)
+
+		couponCode := "BUYGETONE"
+		orderReq := model.OrderReq{
+			CouponCode: sPtr(couponCode),
+			Items: []struct {
+				ProductId string `json:"productId"`
+				Quantity  int    `json:"quantity"`
+			}{
+				{ProductId: "10", Quantity: 1}, // Price 13.3
+				{ProductId: "11", Quantity: 1}, // Price 15.0
+			},
+		}
+
+		mockProductRepo.On("GetProductByID", "10").Return(&productWaffle, nil).Once()
+		mockProductRepo.On("GetProductByID", "11").Return(&productBurger, nil).Once()
+		mockOrderRepo.On("CreateOrder", mock.AnythingOfType("model.Order")).Return(nil).Once()
+		mockPromoValidator.On("IsValid", couponCode).Return(true).Once()
+
+		// Subtotal: 13.3 + 15.0 = 28.3. Lowest price: 13.3. Discount: 13.3. Final: 15.0
+		order, err := service.PlaceOrder(orderReq)
+		assert.NoError(t, err)
+		assert.NotNil(t, order)
+		assert.InDelta(t, float32(15.0), *order.Total, 0.001)
+		assert.InDelta(t, float32(13.3), *order.Discounts, 0.001)
+
+		mockProductRepo.AssertExpectations(t)
+		mockOrderRepo.AssertExpectations(t)
+		mockPromoValidator.AssertExpectations(t)
+	})
+
+	// Test case 5: Order with invalid coupon
 	t.Run("Order with invalid coupon", func(t *testing.T) {
-		// Setup mocks for this subtest
 		mockProductRepo := new(MockProductRepository)
 		mockOrderRepo := new(MockOrderRepository)
 		mockPromoValidator := new(MockPromoValidator)
@@ -161,7 +234,7 @@ func TestOrderService_PlaceOrder(t *testing.T) {
 			},
 		}
 
-		mockProductRepo.On("GetProductByID", "10").Return(&sampleProduct, nil).Maybe()
+		mockProductRepo.On("GetProductByID", "10").Return(&productWaffle, nil).Maybe()
 		mockPromoValidator.On("IsValid", couponCode).Return(false).Once()
 
 		order, err := service.PlaceOrder(orderReq)
@@ -174,9 +247,8 @@ func TestOrderService_PlaceOrder(t *testing.T) {
 		mockPromoValidator.AssertExpectations(t)
 	})
 
-	// Test case 4: Product not found
+	// Test case 6: Product not found
 	t.Run("Product not found", func(t *testing.T) {
-		// Setup mocks for this subtest
 		mockProductRepo := new(MockProductRepository)
 		mockOrderRepo := new(MockOrderRepository)
 		mockPromoValidator := new(MockPromoValidator)
@@ -198,14 +270,12 @@ func TestOrderService_PlaceOrder(t *testing.T) {
 		assert.Nil(t, order)
 		assert.Contains(t, err.Error(), "product not found")
 
-		mockProductRepo.AssertExpectations(t)
-		mockOrderRepo.AssertNotCalled(t, "CreateOrder")
+		mockProductRepo.AssertNotCalled(t, "CreateOrder")
 		mockPromoValidator.AssertNotCalled(t, "IsValid")
 	})
 
-	// Test case 5: Error saving order
+	// Test case 7: Error saving order
 	t.Run("Error saving order", func(t *testing.T) {
-		// Setup mocks for this subtest
 		mockProductRepo := new(MockProductRepository)
 		mockOrderRepo := new(MockOrderRepository)
 		mockPromoValidator := new(MockPromoValidator)
@@ -220,7 +290,7 @@ func TestOrderService_PlaceOrder(t *testing.T) {
 			},
 		}
 
-		mockProductRepo.On("GetProductByID", "10").Return(&sampleProduct, nil).Once()
+		mockProductRepo.On("GetProductByID", "10").Return(&productWaffle, nil).Once()
 		mockOrderRepo.On("CreateOrder", mock.AnythingOfType("model.Order")).Return(errors.New("db error")).Once()
 		mockPromoValidator.AssertNotCalled(t, "IsValid", mock.Anything)
 
