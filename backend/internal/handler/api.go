@@ -14,7 +14,7 @@ import (
 
 // Server implements the ServerInterface for our API.
 type Server struct {
-	OrderService *service.OrderService
+	OrderService service.OrderServiceIface
 	ProductRepo  storage.ProductRepository
 }
 
@@ -58,6 +58,11 @@ func (s *Server) PlaceOrder(w http.ResponseWriter, r *http.Request) {
 	var orderReq model.OrderReq
 	if err := json.NewDecoder(r.Body).Decode(&orderReq); err != nil {
 		http.Error(w, "Invalid request body", http.StatusBadRequest)
+		return
+	}
+
+	if len(orderReq.Items) == 0 {
+		http.Error(w, "Order must contain at least one item", http.StatusUnprocessableEntity)
 		return
 	}
 

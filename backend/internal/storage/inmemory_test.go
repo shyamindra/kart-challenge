@@ -4,7 +4,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
-	"kart-challenge/backend/internal/handler"
+	"kart-challenge/backend/internal/model"
 )
 
 func TestInMemoryStorage_GetAllProducts(t *testing.T) {
@@ -43,7 +43,7 @@ func TestInMemoryStorage_CreateOrder(t *testing.T) {
 	quantity := 1
 	total := float32(13.3)
 
-	order := handler.Order{
+	order := model.Order{
 		Id:    sPtr(orderID),
 		Total: fPtr(total),
 		Items: &[]struct {

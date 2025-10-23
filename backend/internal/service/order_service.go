@@ -10,6 +10,11 @@ import (
 	"kart-challenge/backend/internal/storage"
 )
 
+// OrderServiceIface defines the interface for the OrderService.
+type OrderServiceIface interface {
+	PlaceOrder(req model.OrderReq) (*model.Order, error)
+}
+
 // OrderService defines the business logic for orders.
 type OrderService struct {
 	productRepo storage.ProductRepository

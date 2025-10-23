@@ -6,7 +6,7 @@ import (
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
-	"kart-challenge/backend/internal/handler"
+	"kart-challenge/backend/internal/model"
 )
 
 // Helper functions for pointers
@@ -18,17 +18,17 @@ type MockProductRepository struct {
 	mock.Mock
 }
 
-func (m *MockProductRepository) GetAllProducts() ([]handler.Product, error) {
+func (m *MockProductRepository) GetAllProducts() ([]model.Product, error) {
 	args := m.Called()
-	return args.Get(0).([]handler.Product), args.Error(1)
+	return args.Get(0).([]model.Product), args.Error(1)
 }
 
-func (m *MockProductRepository) GetProductByID(id string) (*handler.Product, error) {
+func (m *MockProductRepository) GetProductByID(id string) (*model.Product, error) {
 	args := m.Called(id)
 	if args.Get(0) == nil {
 		return nil, args.Error(1)
 	}
-	return args.Get(0).(*handler.Product), args.Error(1)
+	return args.Get(0).(*model.Product), args.Error(1)
 }
 
 // MockOrderRepository is a mock implementation of storage.OrderRepository
@@ -36,7 +36,7 @@ type MockOrderRepository struct {
 	mock.Mock
 }
 
-func (m *MockOrderRepository) CreateOrder(order handler.Order) error {
+func (m *MockOrderRepository) CreateOrder(order model.Order) error {
 	args := m.Called(order)
 	return args.Error(0)
 }
@@ -57,7 +57,7 @@ func TestOrderService_PlaceOrder(t *testing.T) {
 	fPtr := func(f float32) *float32 { return &f }
 
 	// Define a sample product (can be outside t.Run as it's constant)
-	sampleProduct := handler.Product{
+	sampleProduct := model.Product{
 		Id:       sPtr("10"),
 		Name:     sPtr("Chicken Waffle"),
 		Price:    fPtr(13.3),
@@ -83,7 +83,7 @@ func TestOrderService_PlaceOrder(t *testing.T) {
 		mockPromoValidator := new(MockPromoValidator)
 		service := NewOrderService(mockProductRepo, mockOrderRepo, mockPromoValidator)
 
-		orderReq := handler.OrderReq{
+		orderReq := model.OrderReq{
 			Items: []struct {
 				ProductId string `json:"productId"`
 				Quantity  int    `json:"quantity"`
@@ -93,7 +93,7 @@ func TestOrderService_PlaceOrder(t *testing.T) {
 		}
 
 		mockProductRepo.On("GetProductByID", "10").Return(&sampleProduct, nil).Once()
-		mockOrderRepo.On("CreateOrder", mock.AnythingOfType("handler.Order")).Return(nil).Once()
+		mockOrderRepo.On("CreateOrder", mock.AnythingOfType("model.Order")).Return(nil).Once()
 		mockPromoValidator.AssertNotCalled(t, "IsValid", mock.Anything)
 
 		order, err := service.PlaceOrder(orderReq)
@@ -116,7 +116,7 @@ func TestOrderService_PlaceOrder(t *testing.T) {
 		service := NewOrderService(mockProductRepo, mockOrderRepo, mockPromoValidator)
 
 		couponCode := "VALIDCODE"
-		orderReq := handler.OrderReq{
+		orderReq := model.OrderReq{
 			CouponCode: sPtr(couponCode),
 			Items: []struct {
 				ProductId string `json:"productId"`
@@ -127,7 +127,7 @@ func TestOrderService_PlaceOrder(t *testing.T) {
 		}
 
 		mockProductRepo.On("GetProductByID", "10").Return(&sampleProduct, nil).Once()
-		mockOrderRepo.On("CreateOrder", mock.AnythingOfType("handler.Order")).Return(nil).Once()
+		mockOrderRepo.On("CreateOrder", mock.AnythingOfType("model.Order")).Return(nil).Once()
 		mockPromoValidator.On("IsValid", couponCode).Return(true).Once()
 
 		order, err := service.PlaceOrder(orderReq)
@@ -151,7 +151,7 @@ func TestOrderService_PlaceOrder(t *testing.T) {
 		service := NewOrderService(mockProductRepo, mockOrderRepo, mockPromoValidator)
 
 		couponCode := "INVALIDCODE"
-		orderReq := handler.OrderReq{
+		orderReq := model.OrderReq{
 			CouponCode: sPtr(couponCode),
 			Items: []struct {
 				ProductId string `json:"productId"`
@@ -182,7 +182,7 @@ func TestOrderService_PlaceOrder(t *testing.T) {
 		mockPromoValidator := new(MockPromoValidator)
 		service := NewOrderService(mockProductRepo, mockOrderRepo, mockPromoValidator)
 
-		orderReq := handler.OrderReq{
+		orderReq := model.OrderReq{
 			Items: []struct {
 				ProductId string `json:"productId"`
 				Quantity  int    `json:"quantity"`
@@ -211,7 +211,7 @@ func TestOrderService_PlaceOrder(t *testing.T) {
 		mockPromoValidator := new(MockPromoValidator)
 		service := NewOrderService(mockProductRepo, mockOrderRepo, mockPromoValidator)
 
-		orderReq := handler.OrderReq{
+		orderReq := model.OrderReq{
 			Items: []struct {
 				ProductId string `json:"productId"`
 				Quantity  int    `json:"quantity"`
@@ -221,7 +221,7 @@ func TestOrderService_PlaceOrder(t *testing.T) {
 		}
 
 		mockProductRepo.On("GetProductByID", "10").Return(&sampleProduct, nil).Once()
-		mockOrderRepo.On("CreateOrder", mock.AnythingOfType("handler.Order")).Return(errors.New("db error")).Once()
+		mockOrderRepo.On("CreateOrder", mock.AnythingOfType("model.Order")).Return(errors.New("db error")).Once()
 		mockPromoValidator.AssertNotCalled(t, "IsValid", mock.Anything)
 
 		order, err := service.PlaceOrder(orderReq)
