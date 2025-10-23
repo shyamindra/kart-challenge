@@ -45,7 +45,7 @@ func (s *OrderService) PlaceOrder(req model.OrderReq) (*model.Order, error) {
 		price     float32
 		subtotal  float32
 	}
-	
+
 	var total float32
 	var discountsAmount float32
 	pricedItems := make([]pricedItem, 0, len(req.Items))
@@ -56,7 +56,7 @@ func (s *OrderService) PlaceOrder(req model.OrderReq) (*model.Order, error) {
 		if err != nil {
 			return nil, fmt.Errorf("product not found: %s", itemReq.ProductId)
 		}
-		
+
 		itemPrice := *product.Price
 		itemSubtotal := itemPrice * float32(itemReq.Quantity)
 		total += itemSubtotal

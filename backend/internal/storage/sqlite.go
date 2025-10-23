@@ -10,8 +10,9 @@ import (
 	"path/filepath"
 	"sync"
 
-	_ "github.com/mattn/go-sqlite3"
 	"kart-challenge/backend/internal/model"
+
+	_ "github.com/mattn/go-sqlite3"
 )
 
 const dbFileName = "kart_challenge.db"
@@ -118,7 +119,11 @@ func (s *SQLiteStore) initProducts() error {
 	if err != nil {
 		return err
 	}
-	defer tx.Rollback()
+	defer func() {
+		if rErr := tx.Rollback(); rErr != nil && !errors.Is(rErr, sql.ErrTxDone) {
+			log.Printf("Error during transaction rollback: %v", rErr)
+		}
+	}()
 
 	stmt, err := tx.Prepare("INSERT INTO products(id, name, price, category, image_json) VALUES(?, ?, ?, ?, ?)")
 	if err != nil {
@@ -269,7 +274,7 @@ func (s *SQLiteStore) CreateOrder(order model.Order) error {
 }
 
 // Helper functions for pointers
-func sPtr(s string) *string { return &s }
+func sPtr(s string) *string   { return &s }
 func fPtr(f float32) *float32 { return &f }
 
 // Close closes the database connection.
