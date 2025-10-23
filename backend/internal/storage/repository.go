@@ -14,3 +14,9 @@ type ProductRepository interface {
 type OrderRepository interface {
 	CreateOrder(order model.Order) error
 }
+
+// Store combines all repository interfaces into a single interface for dependency injection.
+type Store interface {
+	ProductRepository
+	OrderRepository
+}

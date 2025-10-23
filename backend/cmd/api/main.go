@@ -23,7 +23,11 @@ func main() {
 	validator := promocode.NewValidator(dataDir)
 
 	// Initialize storage
-	store := storage.NewInMemoryStorage()
+	store, err := storage.NewSQLiteStore(dataDir)
+	if err != nil {
+		log.Fatalf("Failed to initialize storage: %v", err)
+	}
+	defer store.Close()
 
 	// Initialize service
 	orderService := service.NewOrderService(store, store, validator)
