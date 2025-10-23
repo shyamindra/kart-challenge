@@ -79,6 +79,55 @@ Here is an example workflow (you can use it as a reference or use your own workf
 
 _By following these guidelines, you should be able to build a functional and visually appealing mini e-commerce shopping portal that meets the minimum requirements and bonus goals. Good luck! 🚀_
 
+## Setup to bring the app up
+
+To run the full application, you must start both the backend API server and the frontend development server.
+
+### 1. Backend Setup (Go API)
+
+The backend is located in the `backend/` directory.
+
+1.  **Navigate to the backend directory:**
+    ```bash
+    cd backend
+    ```
+2.  **Install dependencies and build the application:**
+    ```bash
+    go mod download
+    go build -o api ./cmd/api
+    ```
+3.  **Run the API server:**
+    ```bash
+    ./api
+    # The server should start on the port configured in main.go (e.g., :8080)
+    ```
+    *Note: The server uses an SQLite database for persistence. If you need to prepare initial product data, refer to the `backend/scripts/prepare_data.sh` script.*
+
+### 2. Frontend Setup (React/Vite)
+
+The frontend is located in the `frontend/` directory.
+
+1.  **Navigate to the frontend directory:**
+    ```bash
+    cd frontend
+    ```
+2.  **Install Node.js dependencies:**
+    ```bash
+    npm install
+    ```
+3.  **Start the development server:**
+    ```bash
+    npm run dev
+    ```
+    The application will typically be available at `http://localhost:5173` (or a similar port) and will automatically proxy API calls to the running backend server.
+
+
+## Documentation
+
+- [Project Overview](./docs/developer_manual/SUMMARY.md): Summary of the project, its features, and the technologies used.
+- [Backend Guide](./docs/developer_manual/BACKEND_GUIDE.md): Detailed guide on the Go API server's architecture and setup.
+- [Frontend Guide](./docs/developer_manual/FRONTEND_GUIDE.md): Detailed guide on the React/TypeScript application's architecture and setup.
+
 **Resources**
 
 - API documentation: https://orderfoodonline.deno.dev/public/openapi.html
