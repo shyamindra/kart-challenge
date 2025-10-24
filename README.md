@@ -121,6 +121,19 @@ The frontend is located in the `frontend/` directory.
     ```
     The application will typically be available at `http://localhost:5173` (or a similar port) and will automatically proxy API calls to the running backend server.
 
+### 3. Running with Docker Compose
+
+For a fully containerized setup, you can use Docker Compose to run both the backend and frontend services simultaneously.
+
+1.  **Ensure Docker is running** on your system.
+2.  **Build and start the services** from the project root:
+    ```bash
+    docker compose up --build
+    ```
+3.  **Access the application** at `http://localhost:3000`.
+
+Feel free to use any tool or workflow ou are comformtable with.
+
 
 ## Documentation
 
