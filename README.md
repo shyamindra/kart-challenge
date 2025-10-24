@@ -79,7 +79,9 @@ Here is an example workflow (you can use it as a reference or use your own workf
 
 _By following these guidelines, you should be able to build a functional and visually appealing mini e-commerce shopping portal that meets the minimum requirements and bonus goals. Good luck! 🚀_
 
-## Setup to bring the app up
+Feel free to use any tool or workflow ou are comformtable with.
+
+## Getting Started: Bringing up the Application
 
 To run the full application, you must start both the backend API server and the frontend development server.
 
@@ -132,7 +134,6 @@ For a fully containerized setup, you can use Docker Compose to run both the back
     ```
 3.  **Access the application** at `http://localhost:3000`.
 
-Feel free to use any tool or workflow ou are comformtable with.
 
 
 ## Documentation
