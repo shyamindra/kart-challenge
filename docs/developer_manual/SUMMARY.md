@@ -20,7 +20,20 @@ The project is split into two main components:
 *   **User Experience:** Show an order confirmation after a successful order placement.
 *   **Design:** Responsive layout targeting mobile (375px) and desktop (1440px) widths, adhering to the provided Figma design.
 
----
+## Getting Started: Bringing up the Application
+
+The recommended way to run the full application stack is using **Docker Compose**. This handles the build, networking, and data preparation for both services automatically.
+
+### Running with Docker Compose
+
+1.  **Ensure Docker is running** on your system.
+2.  **Build and start the services** from the project root:
+    ```bash
+    docker compose up --build
+    ```
+3.  **Access the application** at `http://localhost:3000`.
+
+For manual setup instructions, see the dedicated guides below.
 
 ## Development Note
 

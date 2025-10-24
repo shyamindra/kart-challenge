@@ -12,6 +12,13 @@ The backend is a Go application located in the `backend/` directory, built using
 | `internal/storage` | Data Access | Abstracts the database (SQLite) operations via repository interfaces. |
 | `internal/promocode` | External Service | Handles the complex, pre-processed validation logic for promo codes. |
 
+## Containerization: Dockerfile
+
+The `backend/Dockerfile` uses a multi-stage build to create a minimal, production-ready image:
+
+1.  **Build Stage:** Uses `golang:1.21-alpine` to compile the Go binary and execute the `scripts/prepare_data.sh` script to download and decompress the coupon base files into the `data/` directory.
+2.  **Final Stage:** Uses a minimal `alpine:latest` image, copying only the compiled binary and the prepared `data/` directory.
+
 ## Getting Started: Running the API
 
 The API server must be running before starting the frontend.
