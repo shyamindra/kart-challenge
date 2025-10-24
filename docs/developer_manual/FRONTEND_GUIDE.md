@@ -26,6 +26,8 @@ The `frontend/Dockerfile` uses a multi-stage build for efficient deployment:
 
 ## Getting Started: Running the Web App
 
+> **Note:** For a fully containerized setup using Docker Compose, please refer to the [SUMMARY.md](../SUMMARY.md) page.
+
 The frontend development server will automatically proxy API calls to the backend, so ensure the backend is running first.
 
 1.  **Navigate to the frontend directory:**

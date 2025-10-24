@@ -21,6 +21,8 @@ The `backend/Dockerfile` uses a multi-stage build to create a minimal, productio
 
 ## Getting Started: Running the API
 
+> **Note:** For a fully containerized setup using Docker Compose, please refer to the [SUMMARY.md](../SUMMARY.md) page.
+
 The API server must be running before starting the frontend.
 
 1.  **Navigate to the backend directory:**
